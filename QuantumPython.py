@@ -1,11 +1,12 @@
 import telebot
-import os  # این رو اضافه کن
+import os
 from telebot import types
 
-# به جای قرار دادن مستقیم توکن، آن را از سیستم می‌خوانیم
+# تنظیمات
 TOKEN = os.getenv("BOT_TOKEN") 
 MY_CHANNEL = "@Najm_5D"
 TARGET_LINK = "https://t.me/mrKhabardar"
+ADMIN_ID = 7801959849  # <--- حتماً آیدی عددی خودت را اینجا جایگزین صفر کن
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -14,19 +15,26 @@ def is_member(user_id):
         status = bot.get_chat_member(MY_CHANNEL, user_id).status
         return status in ['member', 'administrator', 'creator']
     except Exception as e:
-        # اگر ربات ادمین نباشد یا کانال پیدا نشود
         print(f"Error checking membership: {e}")
         return False
 
 @bot.message_handler(commands=['start'])
 def start_command(message):
     user_id = message.from_user.id
+    user_name = message.from_user.first_name
+    username = f"@{message.from_user.username}" if message.from_user.username else "بدون یوزرنیم"
+
+    # --- قابلیت جدید: گزارش به ادمین ---
+    try:
+        report_msg = f"🚀 کاربر جدید ربات را استارت زد:\n\n👤 نام: {user_name}\n🆔 یوزرنیم: {username}\n🔢 آیدی عددی: {user_id}"
+        bot.send_message(ADMIN_ID, report_msg)
+    except:
+        pass # اگر آیدی ادمین اشتباه باشد یا ربات را بلاک کرده باشد، برنامه کرش نمی‌کند
+    # --------------------------------
 
     if is_member(user_id):
-        # اگر عضو بود، لینک مقصد را بفرست
         bot.send_message(message.chat.id, f"✅ عضویت شما تایید شده است.\n\n🔗 لینک کانال مورد نظر:\n{TARGET_LINK}")
     else:
-        # اگر عضو نبود، دکمه‌های شیشه‌ای را نمایش بده
         markup = types.InlineKeyboardMarkup()
         btn_join = types.InlineKeyboardButton("📢 عضویت در کانال", url=f"https://t.me/{MY_CHANNEL.replace('@', '')}")
         btn_check = types.InlineKeyboardButton("🔄 تایید عضویت", callback_data="check_membership")
@@ -42,13 +50,11 @@ def check_callback(call):
     user_id = call.from_user.id
 
     if is_member(user_id):
-        # ویرایش پیام قبلی و ارسال لینک
         bot.edit_message_text(f"✅ با تشکر، عضویت شما تایید شد.\n\n🔗 لینک مقصد:\n{TARGET_LINK}",
                               call.message.chat.id,
                               call.message.message_id)
         bot.answer_callback_query(call.id, "خوش آمدید!")
     else:
-        # نمایش هشدار که هنوز عضو نشده است
         bot.answer_callback_query(call.id, "❌ شما هنوز در کانال @Najm_5D عضو نشده‌اید!", show_alert=True)
 
 print("Quantum Bot is running...")
