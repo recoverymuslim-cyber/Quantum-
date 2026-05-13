@@ -34,7 +34,7 @@ def start_command(message):
         markup.add(btn_check)
 
         bot.send_message(message.chat.id,
-                         "👋 سلام به ربات Quantum خوش آمدید!\n\n⚠️ برای دسترسی به محتوا، ابتدا باید در کانال ما عضو شوید>
+                         "👋 سلام به ربات Quantum خوش آمدید!\n\n⚠️ برای دسترسی به محتوا، ابتدا باید در کانال ما عضو شوید ",
                          reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data == "check_membership")
