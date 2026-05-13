@@ -1,14 +1,14 @@
 import telebot
+import os  # این رو اضافه کن
 from telebot import types
 
-# اطلاعات تنظیم شده توسط شما
-TOKEN = "8661348448:AAEylKTLBgDGgrGf00ezIeTT-5p7maAKleg"
+# به جای قرار دادن مستقیم توکن، آن را از سیستم می‌خوانیم
+TOKEN = os.getenv("BOT_TOKEN") 
 MY_CHANNEL = "@Najm_5D"
 TARGET_LINK = "https://t.me/mrKhabardar"
 
 bot = telebot.TeleBot(TOKEN)
 
-# تابع بررسی عضویت کاربر در کانال
 def is_member(user_id):
     try:
         status = bot.get_chat_member(MY_CHANNEL, user_id).status
